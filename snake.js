@@ -204,6 +204,10 @@ function draw() {
   ctx.fillText(footer, canvas.width - footerWidth - 10, GAME_HEIGHT + 35);
 }
 
+bgImage.onload = () => {
+  document.getElementById('menu').style.display = 'block';
+};
+
 
 
 
