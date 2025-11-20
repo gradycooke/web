@@ -7,10 +7,7 @@
   <style>
     body {
       margin: 0;
-      background-image: url('background.jpg'); /* ✅ website background */
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
+      background-color: black;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -19,7 +16,7 @@
       font-family: 'Century Gothic', sans-serif;
       flex-direction: column;
     }
-  
+
     canvas {
       border: 2px solid white;
     }
@@ -49,7 +46,7 @@
 <body>
 
   <!-- Difficulty Menu -->
-  <div id="menu" style="display: none;">
+  <div id="menu">
     <h1>Select Difficulty</h1>
     <button onclick="startGame(10)">(1) Easy</button>
     <button onclick="startGame(20)">(2) Medium</button>
@@ -69,6 +66,6 @@
   <!-- Game Script -->
   <script src="snake.js"></script>
 </body>
-
 </html>
+
 
