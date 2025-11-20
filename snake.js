@@ -123,6 +123,7 @@ function update() {
 
   // Check win condition BEFORE collision
   if (head.x === food.x && head.y === food.y) {
+    eatSound.currentTime = 0;
     eatSound.play();
     if (snake.length >= MAX_TILES) {
       winGame();
@@ -201,4 +202,5 @@ function draw() {
   ctx.font = '10px Century Gothic';
   const footerWidth = ctx.measureText(footer).width;
   ctx.fillText(footer, canvas.width - footerWidth - 10, GAME_HEIGHT + 35);
+
 }
