@@ -11,6 +11,9 @@ const winSound = new Audio('short-crowd-cheer-6713.ogg');
 
 const bgImage = new Image();
 bgImage.src = "starry_background.jpg";
+bgImage.onload = () => {
+  document.getElementById('menu').style.display = 'block';
+};
 
 let difficultyLabel = "Easy";
 let snake = [{ x: 200, y: 200 }];
@@ -210,6 +213,7 @@ bgImage.onload = () => {
   document.addEventListener('keydown', handleGlobalKeys);
   document.addEventListener('keydown', changeDirection);
 };
+
 
 
 
