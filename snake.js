@@ -44,7 +44,7 @@ function handleGlobalKeys(e) {
     gameOver = false;
     youWin = false;
   } else if (e.key === 'Enter') {
-  // Always restart game when Enter is pressed (regardless of state)
+    // Always restart game when Enter is pressed
     startGame(speed);
   } else if (e.key === ' ') {
     // Only space bar pauses/resumes the game
@@ -203,6 +203,7 @@ function draw() {
   const footerWidth = ctx.measureText(footer).width;
   ctx.fillText(footer, canvas.width - footerWidth - 10, GAME_HEIGHT + 35);
 }
+
 
 
 
