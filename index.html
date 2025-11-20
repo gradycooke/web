@@ -7,7 +7,10 @@
   <style>
     body {
       margin: 0;
-      background-color: black;
+      background-image: url('background.jpg'); /* ✅ website background */
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -16,7 +19,7 @@
       font-family: 'Century Gothic', sans-serif;
       flex-direction: column;
     }
-
+  
     canvas {
       border: 2px solid white;
     }
@@ -66,4 +69,5 @@
   <!-- Game Script -->
   <script src="snake.js"></script>
 </body>
+
 </html>
