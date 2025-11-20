@@ -151,6 +151,7 @@ function update() {
 function loseGame() {
   clearInterval(gameLoop);
   gameOver = true;
+  gameOverSound.currentTime = 0;
   gameOverSound.play();
   showGameOverScreen("GAME OVER", snake.length);
 }
@@ -203,6 +204,7 @@ function draw() {
   const footerWidth = ctx.measureText(footer).width;
   ctx.fillText(footer, canvas.width - footerWidth - 10, GAME_HEIGHT + 35);
 }
+
 
 
 
