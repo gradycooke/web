@@ -43,6 +43,7 @@ function handleGlobalKeys(e) {
     document.getElementById('gameOverScreen').style.display = 'none';
     gameOver = false;
     youWin = false;
+  }
   else if (e.key === 'Enter') {
     startGame(speed); 
   } else if (e.key === ' ') {
@@ -203,5 +204,6 @@ function draw() {
   ctx.fillText(footer, canvas.width - footerWidth - 10, GAME_HEIGHT + 35);
 
 }
+
 
 
