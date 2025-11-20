@@ -27,9 +27,11 @@ document.addEventListener('keydown', handleGlobalKeys);
 document.addEventListener('keydown', changeDirection);
 
 function handleGlobalKeys(e) {
-  const menuVisible = document.getElementById('menu').style.display !== 'none';
-  const gameOverVisible = document.getElementById('gameOverScreen').style.display !== 'none';
+  e.preventDefault(); // 🧹 prevent default behavior like scroll/submit
 
+  const menuVisible = document.getElementById('menu').style.display !== 'none';
+
+  // In MENU mode: Choose difficulty
   if (menuVisible) {
     if (e.key === '1') startGame(10);
     else if (e.key === '2') startGame(20);
@@ -37,21 +39,46 @@ function handleGlobalKeys(e) {
     return;
   }
 
+  // Backspace = Return to menu
   if (e.key === 'Backspace') {
     clearInterval(gameLoop);
-    document.getElementById('menu').style.display = 'block';
-    document.getElementById('gameOverScreen').style.display = 'none';
+    gameLoop = null;
+    paused = false;
     gameOver = false;
     youWin = false;
-  } else if (e.key === 'Enter' || e.key === ' ') {
-    if (gameOverVisible) {
-      startGame(speed);
-    } else {
+    document.getElementById('gameOverScreen').style.display = 'none';
+    document.getElementById('menu').style.display = 'block';
+    return;
+  }
+
+  // ENTER = Always restart game
+  if (e.key === 'Enter') {
+    restartGame(); 
+    return;
+  }
+
+  // SPACE = Pause/unpause
+  if (e.key === ' ') {
+    if (!gameOver && !youWin) {
       paused = !paused;
-      if (paused) clearInterval(gameLoop);
-      else gameLoop = setInterval(update, 1000 / speed);
+      if (paused) {
+        clearInterval(gameLoop);
+        gameLoop = null;
+      } else {
+        gameLoop = setInterval(update, 1000 / speed);
+      }
     }
   }
+}
+function restartGame() {
+  paused = false;
+  gameOver = false;
+  youWin = false;
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('gameOverScreen').style.display = 'none';
+  resetGame();
+  clearInterval(gameLoop);
+  gameLoop = setInterval(update, 1000 / speed);
 }
 
 function startGame(selectedSpeed) {
@@ -140,7 +167,7 @@ function update() {
     head.x >= canvas.width || head.y >= GAME_HEIGHT ||
     snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)
   ) {
-    Game();
+    loseGame();
     return;
   }
 
@@ -206,6 +233,7 @@ function draw() {
   const footerWidth = ctx.measureText(footer).width;
   ctx.fillText(footer, canvas.width - footerWidth - 10, GAME_HEIGHT + 35);
 }
+
 
 
 
