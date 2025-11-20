@@ -27,11 +27,9 @@ document.addEventListener('keydown', handleGlobalKeys);
 document.addEventListener('keydown', changeDirection);
 
 function handleGlobalKeys(e) {
-  e.preventDefault(); // 🧹 prevent default behavior like scroll/submit
-
   const menuVisible = document.getElementById('menu').style.display !== 'none';
+  const gameOverVisible = document.getElementById('gameOverScreen').style.display !== 'none';
 
-  // In MENU mode: Choose difficulty
   if (menuVisible) {
     if (e.key === '1') startGame(10);
     else if (e.key === '2') startGame(20);
@@ -39,46 +37,21 @@ function handleGlobalKeys(e) {
     return;
   }
 
-  // Backspace = Return to menu
   if (e.key === 'Backspace') {
     clearInterval(gameLoop);
-    gameLoop = null;
-    paused = false;
+    document.getElementById('menu').style.display = 'block';
+    document.getElementById('gameOverScreen').style.display = 'none';
     gameOver = false;
     youWin = false;
-    document.getElementById('gameOverScreen').style.display = 'none';
-    document.getElementById('menu').style.display = 'block';
-    return;
-  }
-
-  // ENTER = Always restart game
-  if (e.key === 'Enter') {
-    restartGame(); 
-    return;
-  }
-
-  // SPACE = Pause/unpause
-  if (e.key === ' ') {
-    if (!gameOver && !youWin) {
+  } else if (e.key === 'Enter' || e.key === ' ') {
+    if (gameOverVisible) {
+      startGame(speed);
+    } else {
       paused = !paused;
-      if (paused) {
-        clearInterval(gameLoop);
-        gameLoop = null;
-      } else {
-        gameLoop = setInterval(update, 1000 / speed);
-      }
+      if (paused) clearInterval(gameLoop);
+      else gameLoop = setInterval(update, 1000 / speed);
     }
   }
-}
-function restartGame() {
-  paused = false;
-  gameOver = false;
-  youWin = false;
-  document.getElementById('menu').style.display = 'none';
-  document.getElementById('gameOverScreen').style.display = 'none';
-  resetGame();
-  clearInterval(gameLoop);
-  gameLoop = setInterval(update, 1000 / speed);
 }
 
 function startGame(selectedSpeed) {
@@ -178,9 +151,6 @@ function update() {
 function loseGame() {
   clearInterval(gameLoop);
   gameOver = true;
-
-  gameOverSound.pause();
-  gameOverSound.currentTime = 0;
   gameOverSound.play();
   showGameOverScreen("GAME OVER", snake.length);
 }
