@@ -9,9 +9,11 @@ const eatSound = new Audio('chime-sound-7143.ogg');
 const gameOverSound = new Audio('negative_beeps-6008.ogg');
 const winSound = new Audio('short-crowd-cheer-6713.ogg');
 
+let bgReady = false;
 const bgImage = new Image();
 bgImage.src = "starry_background.jpg";
 bgImage.onload = () => {
+  bgReady = true;
   document.getElementById('menu').style.display = 'block';
 };
 
@@ -173,7 +175,13 @@ function showGameOverScreen(title, score) {
 }
 
 function draw() {
-  ctx.drawImage(bgImage, 0, 0, canvas.width, GAME_HEIGHT);
+  // ✅ Only draw background if image is fully loaded
+  if (bgReady) {
+    ctx.drawImage(bgImage, 0, 0, canvas.width, GAME_HEIGHT);
+  } else {
+    // Fallback: clear canvas if background isn't ready
+    ctx.clearRect(0, 0, canvas.width, GAME_HEIGHT);
+  }
 
   ctx.fillStyle = 'red';
   ctx.fillRect(food.x, food.y, TILE_SIZE, TILE_SIZE);
@@ -213,6 +221,7 @@ bgImage.onload = () => {
   document.addEventListener('keydown', handleGlobalKeys);
   document.addEventListener('keydown', changeDirection);
 };
+
 
 
 
