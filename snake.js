@@ -10,7 +10,7 @@ const gameOverSound = new Audio('negative_beeps-6008.ogg');
 const winSound = new Audio('short-crowd-cheer-6713.ogg');
 
 const bgImage = new Image();
-bgImage.src = "starry background.jpg";
+bgImage.src = "starry%20background.jpg";
 
 let difficultyLabel = "Easy";
 let snake = [{ x: 200, y: 200 }];
@@ -206,7 +206,11 @@ function draw() {
 
 bgImage.onload = () => {
   document.getElementById('menu').style.display = 'block';
+  
+  document.addEventListener('keydown', handleGlobalKeys);
+  document.addEventListener('keydown', changeDirection);
 };
+
 
 
 
