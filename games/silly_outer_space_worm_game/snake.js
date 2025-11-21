@@ -193,7 +193,7 @@ function draw() {
   // Controls instructions
   ctx.fillStyle = '#ccc';
   ctx.font = '12px Century Gothic';
-  const instructions = 'BACKSPACE = Change Difficulty | ENTER = Restart | SPACE = Pause';
+  const instructions = 'BACKSPACE = Change Difficulty | ENTER = Pause';
   const instructionsWidth = ctx.measureText(instructions).width;
   ctx.fillText(instructions, canvas.width - instructionsWidth - 10, GAME_HEIGHT + 18);
 
@@ -204,3 +204,4 @@ function draw() {
   ctx.fillText(footer, canvas.width - footerWidth - 10, GAME_HEIGHT + 35);
 
 }
+
