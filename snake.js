@@ -57,6 +57,8 @@ function handleGlobalKeys(e) {
 }
 
 function startGame(selectedSpeed) {
+  clearInterval(gameLoop);
+
   lastSelectedSpeed = selectedSpeed;
   speed = selectedSpeed;
   paused = false;
@@ -72,6 +74,7 @@ function startGame(selectedSpeed) {
   document.getElementById('gameOverScreen').style.display = 'none';
 
   resetGame();
+
   gameLoop = setInterval(update, 1000 / speed);
 }
 
@@ -206,6 +209,7 @@ function draw() {
   const footerWidth = ctx.measureText(footer).width;
   ctx.fillText(footer, canvas.width - footerWidth - 10, GAME_HEIGHT + 35);
 }
+
 
 
 
