@@ -203,6 +203,12 @@ function drawStartScreen() {
     ctx.fillText('Bloopy Blop', canvas.width / 2, canvas.height / 2 - 40);
     ctx.font = '24px sans-serif';
     ctx.fillText('Press Space to Start', canvas.width / 2, canvas.height / 2 + 20);
+
+    // --- Add smaller copyright text at bottom ---
+    ctx.font = '12px sans-serif';  // smaller size
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText('@ MNNA 2025 | Not For Redistribution', canvas.width / 2, canvas.height - 15);
 }
 
 // Game over screen
@@ -237,4 +243,5 @@ function loop() {
 }
 
 // Initial render
+
 update();
