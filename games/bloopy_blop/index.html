@@ -1,55 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Bloopy Blop</title>
-    <style>
-        html, body {
-            margin: 0;
-            height: 100%;
-            background-color: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+  <meta charset="UTF-8">
+  <title>Bloopy Blop</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        canvas {
-            background-color: #000;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            z-index: 1;
-            position: relative;
-        }
+    canvas {
+      background-color: #000;
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      z-index: 1;
+      position: relative;
+    }
 
-        /* --- Home Button Styling --- */
-        #homeButton {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            padding: 10px 15px;
-            font-size: 18px;
-            color: white;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 8px;
-            text-decoration: none;
-            transition: background 0.3s ease, transform 0.2s ease;
-            z-index: 10;
-        }
+    /* --- Home Button Styling --- */
+    #homeButton {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      padding: 10px 15px;
+      font-size: 18px;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.3s ease, transform 0.2s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      z-index: 10;
+    }
 
-        #homeButton:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
-        }
-    </style>
+    #homeButton:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
-    <!-- ✅ Place the Home button here, outside <style> -->
-    <a href="../../index.html" id="homeButton">Home</a>
+  <!-- ✅ Home Button -->
+  <a href="../../index.html" id="homeButton">🏠 Home</a>
 
-    <canvas id="gameCanvas" width="480" height="640"></canvas>
-    <script src="block.js"></script>
+  <canvas id="gameCanvas" width="480" height="640"></canvas>
+  <script src="block.js"></script>
 </body>
 </html>
+
 
 
 
