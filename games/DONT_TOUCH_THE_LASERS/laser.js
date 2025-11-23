@@ -1,9 +1,19 @@
-// ✅ Safe reload & animation fix for browser cache / back button
+// ✅ Prevent duplicate loops on reload / cache restore
+let initialized = false;
+
+window.addEventListener('load', () => {
+  if (initialized) return; // prevents double init
+  initialized = true;
+  cancelAnimationFrame(animationFrameId);
+  resetGameState();
+  update();
+});
+
 window.addEventListener('pageshow', (event) => {
   if (event.persisted) {
-    cancelAnimationFrame(animationFrameId); // stop any old loops
-    resetGameState(); // cleanly reset everything
-    update(); // restart the start screen animation
+    cancelAnimationFrame(animationFrameId);
+    resetGameState();
+    update();
   }
 });
 
@@ -62,13 +72,6 @@ function resetGameState() {
   showSensitivityMenu = false;
   titleHue = 0;
 }
-
-// ✅ Reset and start loop on load
-window.addEventListener('load', () => {
-  cancelAnimationFrame(animationFrameId); // prevents double speed
-  resetGameState();
-  update(); // start screen animation loop
-});
 
 // --- CONTROLS ---
 document.addEventListener('keydown', e => {
@@ -361,6 +364,7 @@ if (document.fonts) {
 } else {
   window.onload = update;
 }
+
 
 
 
