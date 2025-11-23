@@ -60,6 +60,7 @@ let maxSensitivity = 20;
 // --- Helper: Full Reset ---
 function resetGameState() {
   cancelAnimationFrame(animationFrameId);
+  animationFrameId = null; // 🧠 prevents ghost loops entirely
   lasers = [];
   frame = 0;
   score = 0;
@@ -364,6 +365,7 @@ if (document.fonts) {
 } else {
   window.onload = update;
 }
+
 
 
 
