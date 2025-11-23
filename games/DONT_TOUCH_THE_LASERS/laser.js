@@ -1,3 +1,8 @@
+// 🔄 Force full reload if returning from cache (GitHub Pages or browser back button fix)
+if (performance.navigation.type === performance.navigation.TYPE_BACK_FORWARD) {
+  window.location.reload(true);
+}
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -49,11 +54,6 @@ window.addEventListener('load', () => {
   minSpeed = 2;
   maxSpeed = 5;
   hue = 180;
-});
-
-// ✅ Reset again if user returns to the page (GitHub Pages caching fix)
-window.addEventListener('pageshow', () => {
-  restartGame(false);
 });
 
 // --- CONTROLS ---
@@ -390,3 +390,4 @@ if (document.fonts) {
 } else {
   window.onload = update;
 }
+
