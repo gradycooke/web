@@ -37,6 +37,13 @@ let pendingSpeed = player.speed; // stores the speed while adjusting
 let minSensitivity = 4;  // you can change this lower bound
 let maxSensitivity = 20; // and this upper bound
 
+function startFromMenu(mode) {
+  controlMode = mode;
+  cancelAnimationFrame(animationFrameId); // stop the start-screen RAF loop
+  started = true;
+  loop();
+}
+
 // --- CONTROLS ---
 document.addEventListener('keydown', e => {
   // --- Sensitivity Adjustment Menu Controls ---
@@ -74,18 +81,14 @@ document.addEventListener('keydown', e => {
     return;
   }
 
-  // --- Normal Controls ---
-  if (gameOver && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
-    controlMode = 'keyboard';
-    restartGame(true);
-    return;
-  }
 
-  if (!started && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
-    controlMode = 'keyboard';
-    started = true;
-    loop();
-    return;
+  // --- Normal Controls ---
+  if (!started || gameOver) {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+      controlMode = 'keyboard';
+      restartGame(true);
+      return;
+    }
   }
 
   if (controlMode === 'keyboard' && !gameOver) keys[e.code] = true;
@@ -96,15 +99,10 @@ document.addEventListener('keyup', e => {
 });
 
 canvas.addEventListener('mousedown', () => {
-  if (gameOver) {
+  if (!started || gameOver) {
     controlMode = 'mouse';
     restartGame(true);
     return;
-  }
-  if (!started) {
-    controlMode = 'mouse';
-    started = true;
-    loop();
   }
 });
 
@@ -131,12 +129,14 @@ function restartGame(startImmediately = false) {
   mousePos.y = player.y;
 
   if (startImmediately) {
+    cancelAnimationFrame(animationFrameId);
     started = true;
     loop();
   } else {
     started = false;
     update();
   }
+
 }
 
 // --- LASER CREATION ---
@@ -406,14 +406,13 @@ function loop() {
 }
 
 // ✅ Ensure the "Press Start 2P" font is fully loaded before drawing the first frame
-if (document.fonts) {
-  document.fonts.load('32px "Press Start 2P"').then(() => {
-    // small delay ensures the font is actually ready for canvas rendering
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => {
     setTimeout(() => update(), 50);
   });
 } else {
-  // fallback for older browsers
-  window.onload = update;
+  // Fallback for older browsers
+  setTimeout(() => update(), 50);
 }
 
 
