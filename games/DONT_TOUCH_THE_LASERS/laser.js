@@ -1,32 +1,15 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// ✅ Properly handle browser navigation (cache reload fix)
+// ✅ Handle returning from browser cache (GitHub Pages/back button fix)
 window.addEventListener('pageshow', (event) => {
   if (event.persisted) {
-    // Instead of forcing an immediate reload, reinitialize cleanly
     resetGameState();
-    update(); // restart start screen animation
+    update(); // Restart start screen animation
   }
 });
 
-// --- Initialization ---
-function resetGameState() {
-  cancelAnimationFrame(animationFrameId);
-  lasers = [];
-  frame = 0;
-  score = 0;
-  window.nextLaserSpawn = 0;
-  minSpeed = 2;
-  maxSpeed = 5;
-  hue = 180;
-  started = false;
-  gameOver = false;
-  showSensitivityMenu = false;
-  titleHue = 0;
-}
-
-// --- Sound ---
+// --- Sounds ---
 const laserSound = new Audio('laser-104024.ogg'); 
 laserSound.volume = 0.3;
 const gameOverSound = new Audio('game-over-arcade-6435.ogg');
@@ -64,24 +47,37 @@ let pendingSpeed = player.speed;
 let minSensitivity = 4;
 let maxSensitivity = 20;
 
+// --- Helper: Full Reset ---
+function resetGameState() {
+  cancelAnimationFrame(animationFrameId);
+  lasers = [];
+  frame = 0;
+  score = 0;
+  window.nextLaserSpawn = 0;
+  minSpeed = 2;
+  maxSpeed = 5;
+  hue = 180;
+  started = false;
+  gameOver = false;
+  showSensitivityMenu = false;
+  titleHue = 0;
+}
+
+// ✅ Reset and start loop on load
 window.addEventListener('load', () => {
-  resetGameState(); // use the same clean reset
-  update(); // ensures title animation starts
+  resetGameState();
+  update(); // start screen animation loop
 });
 
 // --- CONTROLS ---
 document.addEventListener('keydown', e => {
-  // Sensitivity Adjustment Menu
   if (showSensitivityMenu) {
     if (e.code === 'ArrowUp' && pendingSpeed < maxSensitivity) pendingSpeed++;
     if (e.code === 'ArrowDown' && pendingSpeed > minSensitivity) pendingSpeed--;
-
     update();
-
     if (e.code === 'Enter') {
       player.speed = pendingSpeed;
       showSensitivityMenu = false;
-
       if (lastScreen === "gameover") {
         gameOver = true;
         started = true;
@@ -94,7 +90,6 @@ document.addEventListener('keydown', e => {
     return;
   }
 
-  // Enter to open sensitivity menu
   if ((e.code === 'Enter') && (!started || gameOver)) {
     showSensitivityMenu = true;
     pendingSpeed = player.speed;
@@ -103,7 +98,6 @@ document.addEventListener('keydown', e => {
     return;
   }
 
-  // Normal Controls
   if (gameOver && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
     controlMode = 'keyboard';
     restartGame(true);
@@ -155,47 +149,29 @@ function restartGame(startImmediately = false) {
   maxSpeed = 5;
   hue = 180;
   window.nextLaserSpawn = 0;
-
   player.x = canvas.width / 2 - player.width / 2;
   player.y = canvas.height / 2 - player.height / 2;
   mousePos.x = player.x;
   mousePos.y = player.y;
-
   started = !!startImmediately;
   if (startImmediately) loop();
   else update();
 }
 
-// --- LASER CREATION ---
+// --- LASERS ---
 function spawnLaser() {
-  const directions = ['top', 'bottom', 'left', 'right'];
-  const dir = directions[Math.floor(Math.random() * directions.length)];
+  const dirs = ['top', 'bottom', 'left', 'right'];
+  const dir = dirs[Math.floor(Math.random() * dirs.length)];
   const speed = Math.random() * (maxSpeed - minSpeed) + minSpeed;
-  const lengthVariation = Math.random() * 60 - 30;
-
-  let width, height;
-  if (dir === 'top' || dir === 'bottom') {
-    width = 80 + lengthVariation;
-    height = 8;
-  } else {
-    width = 8;
-    height = 80 + lengthVariation;
-  }
+  const lenVar = Math.random() * 60 - 30;
+  let width = dir === 'top' || dir === 'bottom' ? 80 + lenVar : 8;
+  let height = dir === 'top' || dir === 'bottom' ? 8 : 80 + lenVar;
 
   let x, y;
-  if (dir === 'top') {
-    x = Math.random() * (canvas.width - width);
-    y = -10;
-  } else if (dir === 'bottom') {
-    x = Math.random() * (canvas.width - width);
-    y = canvas.height + 10;
-  } else if (dir === 'left') {
-    x = -10;
-    y = Math.random() * (canvas.height - height);
-  } else if (dir === 'right') {
-    x = canvas.width + 10;
-    y = Math.random() * (canvas.height - height);
-  }
+  if (dir === 'top') { x = Math.random() * (canvas.width - width); y = -10; }
+  else if (dir === 'bottom') { x = Math.random() * (canvas.width - width); y = canvas.height + 10; }
+  else if (dir === 'left') { x = -10; y = Math.random() * (canvas.height - height); }
+  else { x = canvas.width + 10; y = Math.random() * (canvas.height - height); }
 
   const sound = laserSound.cloneNode();
   const size = dir === 'top' || dir === 'bottom' ? width : height;
@@ -205,20 +181,11 @@ function spawnLaser() {
   sound.play().catch(() => {});
 
   lasers.push({
-    dir,
-    x,
-    y,
-    width,
-    height,
-    speed:
-      dir === 'top' ? speed :
-      dir === 'bottom' ? -speed :
-      dir === 'left' ? speed :
-      -speed
+    dir, x, y, width, height,
+    speed: (dir === 'top' || dir === 'left') ? speed : -speed
   });
 }
 
-// --- DRAW ---
 function drawPlayer() {
   ctx.fillStyle = 'white';
   ctx.fillRect(player.x, player.y, player.width, player.height);
@@ -229,7 +196,6 @@ function drawLasers() {
   lasers.forEach(l => ctx.fillRect(l.x, l.y, l.width, l.height));
 }
 
-// --- UPDATE LASERS ---
 function updateLasers() {
   lasers.forEach(l => {
     if (l.dir === 'top' || l.dir === 'bottom') l.y += l.speed;
@@ -243,7 +209,6 @@ function updateLasers() {
   );
 }
 
-// --- COLLISIONS ---
 function checkCollisions() {
   for (let l of lasers) {
     if (
@@ -254,15 +219,12 @@ function checkCollisions() {
     ) {
       gameOver = true;
       cancelAnimationFrame(animationFrameId);
-
-      const sound = gameOverSound.cloneNode();
-      sound.currentTime = 0;
-      sound.play().catch(() => {});
+      const s = gameOverSound.cloneNode();
+      s.play().catch(() => {});
     }
   }
 }
 
-// --- MOVEMENT ---
 function movePlayer() {
   if (controlMode === 'mouse') {
     player.x = mousePos.x;
@@ -273,12 +235,10 @@ function movePlayer() {
     if (keys['ArrowLeft']) player.x -= player.speed;
     if (keys['ArrowRight']) player.x += player.speed;
   }
-
   player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
   player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
 }
 
-// --- DIFFICULTY ---
 function updateDifficulty() {
   if (frame < MAX_GAME_FRAMES) {
     const progress = frame / MAX_GAME_FRAMES;
@@ -288,7 +248,6 @@ function updateDifficulty() {
   }
 }
 
-// --- GLOW ---
 function applyGlow() {
   const glowColor = `hsl(${hue}, 100%, 50%)`;
   canvas.style.boxShadow = `0 0 40px 5px ${glowColor}`;
@@ -301,7 +260,6 @@ function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.shadowBlur = 0;
 
-  // Sensitivity menu
   if (showSensitivityMenu) {
     ctx.fillStyle = 'rgba(0,0,0,0.8)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -345,7 +303,6 @@ function update() {
     return;
   }
 
-  // Game over screen
   if (gameOver) {
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -362,7 +319,7 @@ function update() {
     return;
   }
 
-  // Game loop
+  // Gameplay
   updateDifficulty();
   applyGlow();
   movePlayer();
@@ -395,7 +352,7 @@ function loop() {
   animationFrameId = requestAnimationFrame(update);
 }
 
-// ✅ Ensure the font loads before drawing the first frame
+// ✅ Font load fix
 if (document.fonts) {
   document.fonts.load('32px "Press Start 2P"').then(() => {
     setTimeout(() => update(), 50);
@@ -403,6 +360,8 @@ if (document.fonts) {
 } else {
   window.onload = update;
 }
+
+
 
 
 
