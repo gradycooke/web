@@ -1,10 +1,12 @@
-// 🔄 Force full reload if returning from cache (GitHub Pages or browser back button fix)
-if (performance.navigation.type === performance.navigation.TYPE_BACK_FORWARD) {
-  window.location.reload(true);
-}
-
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+
+// 🔄 Fix: Force full reload if restored from cache (after DOM ready)
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    window.location.reload();
+  }
+});
 
 // --- Sound ---
 const laserSound = new Audio('laser-104024.ogg'); 
@@ -390,4 +392,5 @@ if (document.fonts) {
 } else {
   window.onload = update;
 }
+
 
