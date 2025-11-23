@@ -102,7 +102,7 @@ function update() {
   const newEatSound = new Audio('chime-sound-7143.ogg');
   newEatSound.play();
 
-  if (snake.length >= 2) return winGame();
+  if (snake.length >= MAX_TILES) return winGame();
   spawnFood();
   } else {
     snake.pop();
@@ -245,6 +245,7 @@ bgImage.onload = () => {
   // Start loop only after image is ready
   requestAnimationFrame(draw);
 };
+
 
 
 
