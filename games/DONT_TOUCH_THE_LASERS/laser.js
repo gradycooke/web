@@ -82,7 +82,7 @@ document.addEventListener('keydown', e => {
   if (showSensitivityMenu) {
     if (e.code === 'ArrowUp' && pendingSpeed < maxSensitivity) pendingSpeed++;
     if (e.code === 'ArrowDown' && pendingSpeed > minSensitivity) pendingSpeed--;
-    update();
+    ();
     if (e.code === 'Enter') {
       player.speed = pendingSpeed;
       showSensitivityMenu = false;
@@ -93,7 +93,7 @@ document.addEventListener('keydown', e => {
         gameOver = false;
         started = false;
       }
-      update();
+      ();
     }
     return;
   }
@@ -102,7 +102,7 @@ document.addEventListener('keydown', e => {
     showSensitivityMenu = true;
     pendingSpeed = player.speed;
     lastScreen = gameOver ? "gameover" : "start";
-    update();
+    ();
     return;
   }
 
@@ -163,7 +163,7 @@ function restartGame(startImmediately = false) {
   mousePos.y = player.y;
   started = !!startImmediately;
   if (startImmediately) loop();
-  else update();
+  else ();
 }
 
 // --- LASERS ---
@@ -265,6 +265,9 @@ function applyGlow() {
 
 // --- MAIN LOOP ---
 function update() {
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  animationFrameId = requestAnimationFrame(update);
+  
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.shadowBlur = 0;
 
@@ -368,6 +371,7 @@ if (document.fonts) {
 } else {
   window.onload = update;
 }
+
 
 
 
