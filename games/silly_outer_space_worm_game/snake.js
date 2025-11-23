@@ -122,6 +122,7 @@ function loseGame() {
   clearInterval(gameLoop);
   gameOver = true;
   currentScreen = 'gameover';
+  gameOverSound.currentTime = 0;
   gameOverSound.play();
 }
 
@@ -239,6 +240,7 @@ bgImage.onload = () => {
   // Start loop only after image is ready
   requestAnimationFrame(draw);
 };
+
 
 
 
