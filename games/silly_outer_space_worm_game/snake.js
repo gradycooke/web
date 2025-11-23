@@ -99,9 +99,11 @@ function update() {
   snake.unshift(head);
 
   if (head.x === food.x && head.y === food.y) {
-    eatSound.play();
-    if (snake.length >= 2) return winGame();
-    spawnFood();
+  const newEatSound = new Audio('chime-sound-7143.ogg');
+  newEatSound.play();
+
+  if (snake.length >= 2) return winGame();
+  spawnFood();
   } else {
     snake.pop();
   }
@@ -220,12 +222,14 @@ function drawGameOverOverlay() {
   ctx.font = '80px Century Gothic';
   ctx.textAlign = 'center';
   ctx.strokeStyle = 'black';
-  
-  // Change fill color based on win or lose
+
+  // Draw GAME OVER or YOU WIN! in red or lime
   ctx.fillStyle = gameOver ? 'red' : 'lime';
-  
   ctx.fillText(gameOver ? 'GAME OVER' : 'YOU WIN!', canvas.width / 2, canvas.height / 2 - 100);
-  
+
+  // Reset color for rest of the overlay text
+  ctx.fillStyle = 'white';
+
   ctx.font = '35px Century Gothic';
   ctx.fillText(`Score: ${snake.length}`, canvas.width / 2, canvas.height / 2 - 10);
   ctx.fillText(`Difficulty: ${difficultyLabel}`, canvas.width / 2, canvas.height / 2 + 35);
@@ -236,10 +240,12 @@ function drawGameOverOverlay() {
 }
 
 
+
 bgImage.onload = () => {
   // Start loop only after image is ready
   requestAnimationFrame(draw);
 };
+
 
 
 
