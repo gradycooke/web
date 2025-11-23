@@ -1,12 +1,30 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// 🔄 Fix: Force full reload if restored from cache (after DOM ready)
+// ✅ Properly handle browser navigation (cache reload fix)
 window.addEventListener('pageshow', (event) => {
   if (event.persisted) {
-    window.location.reload();
+    // Instead of forcing an immediate reload, reinitialize cleanly
+    resetGameState();
+    update(); // restart start screen animation
   }
 });
+
+// --- Initialization ---
+function resetGameState() {
+  cancelAnimationFrame(animationFrameId);
+  lasers = [];
+  frame = 0;
+  score = 0;
+  window.nextLaserSpawn = 0;
+  minSpeed = 2;
+  maxSpeed = 5;
+  hue = 180;
+  started = false;
+  gameOver = false;
+  showSensitivityMenu = false;
+  titleHue = 0;
+}
 
 // --- Sound ---
 const laserSound = new Audio('laser-104024.ogg'); 
@@ -46,18 +64,9 @@ let pendingSpeed = player.speed;
 let minSensitivity = 4;
 let maxSensitivity = 20;
 
-// ✅ Reset everything on page load or reload
 window.addEventListener('load', () => {
-  cancelAnimationFrame(animationFrameId);
-  lasers = [];
-  frame = 0;
-  score = 0;
-  window.nextLaserSpawn = 0;
-  minSpeed = 2;
-  maxSpeed = 5;
-  hue = 180;
-
-  update(); // ✅ Ensure start screen color loop begins
+  resetGameState(); // use the same clean reset
+  update(); // ensures title animation starts
 });
 
 // --- CONTROLS ---
@@ -394,6 +403,7 @@ if (document.fonts) {
 } else {
   window.onload = update;
 }
+
 
 
 
