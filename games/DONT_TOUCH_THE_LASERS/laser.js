@@ -56,6 +56,8 @@ window.addEventListener('load', () => {
   minSpeed = 2;
   maxSpeed = 5;
   hue = 180;
+
+  update(); // ✅ Ensure start screen color loop begins
 });
 
 // --- CONTROLS ---
@@ -392,5 +394,6 @@ if (document.fonts) {
 } else {
   window.onload = update;
 }
+
 
 
