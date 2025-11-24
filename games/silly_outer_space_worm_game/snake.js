@@ -10,6 +10,10 @@ const gameOverSound = new Audio('negative_beeps-6008.ogg');
 const winSound = new Audio('short-crowd-cheer-6713.ogg');
 const bgImage = new Image();
 bgImage.src = "starry_background.jpg";
+const volumeSlider = document.getElementById('volumeSlider');
+
+const VOLUME_STORAGE_KEY = 'snake_volume';
+const DEFAULT_VOLUME = 0.6;
 
 let snake, food, direction, directionChanged, paused;
 let speed = 10;
@@ -36,6 +40,35 @@ function loop(timestamp) {
 
 function getHighScoreKey(label) {
   return `snake_highscore_${label.toLowerCase()}`;
+}
+
+function loadSavedVolume() {
+  try {
+    const stored = parseFloat(localStorage.getItem(VOLUME_STORAGE_KEY));
+    if (!Number.isFinite(stored)) return DEFAULT_VOLUME;
+    return Math.min(1, Math.max(0, stored));
+  } catch (err) {
+    return DEFAULT_VOLUME;
+  }
+}
+
+function saveVolume(volume) {
+  try {
+    localStorage.setItem(VOLUME_STORAGE_KEY, String(volume));
+  } catch (err) {
+    // Ignore storage failures (private mode, etc.)
+  }
+}
+
+function applyVolume(volume) {
+  const clamped = Math.min(1, Math.max(0, volume));
+  eatSound.volume = clamped;
+  gameOverSound.volume = clamped;
+  winSound.volume = clamped;
+  if (volumeSlider) {
+    volumeSlider.value = Math.round(clamped * 100);
+  }
+  return clamped;
 }
 
 function loadHighScore(label) {
@@ -115,6 +148,20 @@ function changeDirection(e) {
 
 document.addEventListener('keydown', handleGlobalKeys);
 document.addEventListener('keydown', changeDirection);
+
+applyVolume(loadSavedVolume());
+
+if (volumeSlider) {
+  volumeSlider.addEventListener('input', (event) => {
+    const normalized = Number(event.target.value) / 100;
+    const clamped = applyVolume(normalized);
+    saveVolume(clamped);
+  });
+  // Block keyboard-based changes; volume is mouse-only.
+  volumeSlider.addEventListener('keydown', (event) => {
+    event.preventDefault();
+  });
+}
 
 function spawnFood() {
   let valid = false;
@@ -259,6 +306,7 @@ function drawGameOverOverlay() {
 
 // ✅ Start game loop after background is loaded
 bgImage.onload = () => requestAnimationFrame(loop);
+
 
 
 
