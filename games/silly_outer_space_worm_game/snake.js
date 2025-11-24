@@ -13,7 +13,7 @@ bgImage.src = "starry_background.jpg";
 const volumeSlider = document.getElementById('volumeSlider');
 
 const VOLUME_STORAGE_KEY = 'snake_volume';
-const DEFAULT_VOLUME = 0.6;
+const DEFAULT_VOLUME = 1;
 
 let snake, food, direction, directionChanged, paused;
 let speed = 10;
@@ -306,6 +306,7 @@ function drawGameOverOverlay() {
 
 // ✅ Start game loop after background is loaded
 bgImage.onload = () => requestAnimationFrame(loop);
+
 
 
 
