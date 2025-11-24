@@ -16,7 +16,7 @@ const SCORE_PER_MS = 1000 / (5 * 60 * 1000); // ~1000 points over 5 minutes
 // Colorblind-friendly obstacle palette; intentionally no green to avoid matching the player
 const BLOCK_COLORS = ['#E69F00', '#D55E00', '#F0E442', '#CC79A7', '#9B5DE5', '#d0d0d0'];
 const SHAPES = ['rect', 'trapezoid', 'slant', 'step', 'triangle', 'pentagon', 'diamond'];
-let COLLISIONS_ENABLED = true; // set to false to disable collision detection
+let COLLISIONS_ENABLED = false; // set to false to disable collision detection
 const AIR_LANES = [GROUND_Y - 180, GROUND_Y - 260]; // top positions for air lanes
 const EXTRA_GAP_AFTER_OVERHEAD = 40; // breathing room after a duck obstacle
 const MIN_GAP_SPEED_FACTOR = 12; // scales gap with speed when necessary
@@ -57,6 +57,30 @@ const sfx = {
   jump: new Audio('swing-whoosh-110410.ogg'),
   star: new Audio('90s-game-ui-10-185103.ogg')
 };
+
+const DEFAULT_VOLUME = 0.7;
+const volumeSlider = document.getElementById('volumeSlider');
+
+function setVolume(v) {
+  const level = Math.min(Math.max(v, 0), 1);
+  Object.values(sfx).forEach(a => {
+    if (a) a.volume = level;
+  });
+}
+
+setVolume(DEFAULT_VOLUME);
+if (volumeSlider) {
+  volumeSlider.value = DEFAULT_VOLUME;
+  volumeSlider.addEventListener('input', e => {
+    const v = parseFloat(e.target.value);
+    setVolume(Number.isFinite(v) ? v : DEFAULT_VOLUME);
+  });
+  volumeSlider.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault(); // keep arrow keys exclusive to gameplay
+    }
+  });
+}
 
 // One-time generated backdrop elements
 const stars = Array.from({ length: STAR_COUNT }, () => ({
