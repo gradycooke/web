@@ -7,10 +7,12 @@ const volumeThumb = document.getElementById('volumeThumb');
 // --- Sound ---
 const BASE_LASER_VOLUME = 0.3;
 const BASE_GAMEOVER_VOLUME = 0.5;
+const HIGH_SCORE_KEY = 'dont-touch-the-lasers-high-score';
 let masterVolume = 1;
 let isAdjustingVolume = false;
 const laserSound = new Audio('laser-104024.ogg'); 
 const gameOverSound = new Audio('game-over-arcade-6435.ogg');
+let highScore = loadHighScore();
 
 let player = {
   x: canvas.width / 2 - 20,
@@ -42,6 +44,31 @@ let showSensitivityMenu = false;
 let pendingSpeed = player.speed; // stores the speed while adjusting
 let minSensitivity = 4;  // you can change this lower bound
 let maxSensitivity = 25; // and this upper bound
+
+function loadHighScore() {
+  try {
+    const stored = localStorage.getItem(HIGH_SCORE_KEY);
+    const parsed = Number(stored);
+    return Number.isFinite(parsed) ? parsed : 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function persistHighScore(value) {
+  try {
+    localStorage.setItem(HIGH_SCORE_KEY, String(value));
+  } catch (e) {
+    // ignore storage failures (e.g., private mode)
+  }
+}
+
+function updateHighScoreIfNeeded() {
+  if (score > highScore) {
+    highScore = score;
+    persistHighScore(highScore);
+  }
+}
 
 function updateVolumeUI() {
   if (!volumeTrack || !volumeFill || !volumeThumb) return;
@@ -289,8 +316,11 @@ function checkCollisions() {
         player.y < l.y + l.height &&
         player.y + player.height > l.y
     ) {
-        gameOver = true;
-        cancelAnimationFrame(animationFrameId);
+        if (!gameOver) {
+          gameOver = true;
+          updateHighScoreIfNeeded();
+          cancelAnimationFrame(animationFrameId);
+        }
 
         // --- Play Game Over Sound ---
         const sound = gameOverSound.cloneNode();
@@ -415,6 +445,7 @@ function update() {
     // Score
     ctx.font = '20px "Press Start 2P"';
     ctx.fillText('SCORE: ' + score, canvas.width / 2, canvas.height / 2 + 10);
+    ctx.fillText('HIGH SCORE: ' + highScore, canvas.width / 2, canvas.height / 2 + 45);
 
     // Instructions (smaller)
     ctx.font = '13px "Press Start 2P"';
@@ -486,6 +517,7 @@ if (document.fonts && document.fonts.ready) {
   // Fallback for older browsers
   setTimeout(() => update(), 50);
 }
+
 
 
 
