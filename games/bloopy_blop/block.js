@@ -61,7 +61,7 @@ function updateVolumeUI() {
   volumeBar.setAttribute('aria-valuenow', percent);
 }
 
-function setVolumeFromClick(event) {
+function setVolumeFromPointer(event) {
   if (!volumeBar) return;
   const rect = volumeBar.getBoundingClientRect();
   const ratio = Math.min(Math.max((event.clientX - rect.left) / rect.width, 0), 1);
@@ -100,8 +100,33 @@ document.addEventListener('keyup', e => {
   if (e.code === 'Space') stopFlapLoop();
 });
 
+// Volume slider interactions
+let isDraggingVolume = false;
 if (volumeBar) {
-  volumeBar.addEventListener('click', setVolumeFromClick);
+  const handlePointerDown = e => {
+    isDraggingVolume = true;
+    volumeBar.setPointerCapture(e.pointerId);
+    setVolumeFromPointer(e);
+  };
+
+  const handlePointerMove = e => {
+    if (!isDraggingVolume) return;
+    setVolumeFromPointer(e);
+  };
+
+  const handlePointerUp = e => {
+    if (!isDraggingVolume) return;
+    isDraggingVolume = false;
+    volumeBar.releasePointerCapture(e.pointerId);
+  };
+
+  volumeBar.addEventListener('pointerdown', handlePointerDown);
+  volumeBar.addEventListener('pointermove', handlePointerMove);
+  volumeBar.addEventListener('pointerup', handlePointerUp);
+  volumeBar.addEventListener('pointercancel', handlePointerUp);
+
+  // Preserve click-to-set for accessibility / keyboard emulation
+  volumeBar.addEventListener('click', setVolumeFromPointer);
   updateVolumeUI();
 }
 
