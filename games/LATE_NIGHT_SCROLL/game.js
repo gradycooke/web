@@ -405,6 +405,11 @@ function showStartScreen() {
   if (highScore > 0) {
     ctx.fillText(`High Score: ${Math.floor(highScore)}`, canvas.width / 2, canvas.height / 2 + 60);
   }
+  ctx.font = '12px monospace';
+  ctx.fillStyle = '#d0d0d0';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('@ MNNA 2025 | Not For Redistribution', canvas.width / 2, canvas.height - 16);
+  ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'start';
 }
 
