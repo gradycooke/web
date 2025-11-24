@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <title>Bloopy Blop</title>
   <style>
+    :root {
+      --glow-color: #000;
+      --glow-alpha-color: rgba(0, 0, 0, 0.45);
+    }
+
     html, body {
       margin: 0;
       height: 100%;
@@ -16,10 +21,66 @@
 
     canvas {
       background-color: #000;
-      box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+      box-shadow:
+        0 0 24px rgba(255, 255, 255, 0.15),
+        0 0 46px 12px var(--glow-alpha-color);
       border-radius: 10px;
       z-index: 1;
       position: relative;
+    }
+
+    #gameContainer {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      isolation: isolate;
+      overflow: visible;
+    }
+
+    #gameContainer::after {
+      content: '';
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(circle at center, var(--glow-alpha-color) 0%, rgba(0, 0, 0, 0) 70%);
+      filter: blur(30px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    #controlsRow {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #volumeLabel {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      letter-spacing: 0.3px;
+    }
+
+    #volumeBar {
+      width: 200px;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    #volumeFill {
+      height: 100%;
+      width: 50%;
+      background: linear-gradient(90deg, #ffffff, #e6e6e6);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+      transition: width 0.08s ease-out;
     }
 
     /* --- Home Button Styling --- */
@@ -48,12 +109,18 @@
   <!-- Home Button -->
   <a href="/" id="homeButton">Home</a>
 
-  <canvas id="gameCanvas" width="480" height="640"></canvas>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="480" height="640"></canvas>
+    <div id="controlsRow">
+      <div id="volumeLabel">Volume</div>
+      <div id="volumeBar" aria-label="Volume" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+        <div id="volumeFill"></div>
+      </div>
+    </div>
+  </div>
   <script src="block.js"></script>
 </body>
 </html>
-
-
 
 
 
