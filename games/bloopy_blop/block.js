@@ -18,7 +18,7 @@ let screen = 'start'; // 'start', 'game', 'gameover'
 let flapInterval = null;
 let animationFrameId = null;
 let titleHue = 0;
-let masterVolume = 0.5; // Shared audio volume (0-1)
+let masterVolume = 1; // Shared audio volume (0-1) - start at max
 let currentBgColor = '#000';
 let highScore = 0;
 
@@ -283,4 +283,5 @@ function update() {
 
 // 🔁 Initial render loop
 animationFrameId = requestAnimationFrame(update);
+
 
