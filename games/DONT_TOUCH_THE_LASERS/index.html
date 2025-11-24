@@ -18,6 +18,13 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
+    .game-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 14px;
+    }
+
     canvas {
       background-color: #000;
       box-shadow: 0 0 100px rgba(255, 255, 255, 0.5);
@@ -44,15 +51,69 @@
       background: white;
       color: black;
     }
+
+    .volume-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      font-family: 'Press Start 2P', sans-serif;
+      font-size: 11px;
+      user-select: none;
+    }
+
+    .volume-track {
+      position: relative;
+      width: 220px;
+      height: 12px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #111, #222);
+      border: 2px solid white;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .volume-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 60%;
+      background: linear-gradient(90deg, #39ff14, #9dff00);
+      pointer-events: none;
+    }
+
+    .volume-thumb {
+      position: absolute;
+      top: 50%;
+      height: 18px;
+      width: 6px;
+      background: white;
+      border-radius: 3px;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      left: 60%;
+    }
   </style>
 </head>
 <body>
   <!-- ✅ Correct placement for the Home button -->
   <a href="../../?reload=true" id="homeButton">Home</a>
   
-  <canvas id="gameCanvas" width="600" height="600"></canvas>
+  <div class="game-wrapper">
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <div class="volume-wrapper">
+      <span>VOLUME</span>
+      <div class="volume-track" id="volumeTrack">
+        <div class="volume-fill" id="volumeFill"></div>
+        <div class="volume-thumb" id="volumeThumb"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Link your JS file -->
   <script src="laser.js"></script>
 </body>
 </html>
+
