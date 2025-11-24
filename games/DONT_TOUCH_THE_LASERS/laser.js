@@ -309,6 +309,7 @@ function updateLasers() {
 
 // --- COLLISIONS ---
 function checkCollisions() {
+  let collided = false;
   for (let l of lasers) {
     if (
         player.x < l.x + l.width &&
@@ -318,7 +319,7 @@ function checkCollisions() {
     ) {
         if (!gameOver) {
           gameOver = true;
-          updateHighScoreIfNeeded();
+          collided = true;
           cancelAnimationFrame(animationFrameId);
         }
 
@@ -329,6 +330,7 @@ function checkCollisions() {
         sound.play().catch(() => {});
     }
   }
+  return collided;
 }
 
 // --- PLAYER MOVEMENT ---
@@ -490,11 +492,12 @@ function update() {
   }
 
   updateLasers();
-  checkCollisions();
+  const diedThisFrame = checkCollisions();
   drawLasers();
   drawPlayer();
 
   score++;
+  if (diedThisFrame) updateHighScoreIfNeeded();
   ctx.shadowBlur = 0;
   ctx.fillStyle = 'white';
   ctx.font = '16px "Press Start 2P"';
