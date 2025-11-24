@@ -16,7 +16,7 @@ const SCORE_PER_MS = 1000 / (5 * 60 * 1000); // ~1000 points over 5 minutes
 // Colorblind-friendly obstacle palette; intentionally no green to avoid matching the player
 const BLOCK_COLORS = ['#E69F00', '#D55E00', '#F0E442', '#CC79A7', '#9B5DE5', '#d0d0d0'];
 const SHAPES = ['rect', 'trapezoid', 'slant', 'step', 'triangle', 'pentagon', 'diamond'];
-let COLLISIONS_ENABLED = false; // set to false to disable collision detection
+let COLLISIONS_ENABLED = true; // set to false to disable collision detection
 const AIR_LANES = [GROUND_Y - 180, GROUND_Y - 260]; // top positions for air lanes
 const EXTRA_GAP_AFTER_OVERHEAD = 40; // breathing room after a duck obstacle
 const MIN_GAP_SPEED_FACTOR = 12; // scales gap with speed when necessary
