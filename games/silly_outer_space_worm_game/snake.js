@@ -250,7 +250,7 @@ function drawGameOverOverlay() {
   ctx.font = '35px Century Gothic';
   ctx.fillText(`Score: ${snake.length}`, canvas.width / 2, canvas.height / 2 - 10);
   ctx.fillText(`High Score: ${currentHighScore}`, canvas.width / 2, canvas.height / 2 + 30);
-  ctx.fillText(`Difficulty: ${difficultyLabel}`, canvas.width / 2, canvas.height / 2 + 70);
+  ctx.fillText(`Difficulty: ${difficultyLabel}`, canvas.width / 2, canvas.height / 2 + 75);
 
   ctx.font = '20px Century Gothic';
   ctx.fillText('Press ENTER to Restart', canvas.width / 2, canvas.height / 2 + 150);
@@ -259,6 +259,7 @@ function drawGameOverOverlay() {
 
 // ✅ Start game loop after background is loaded
 bgImage.onload = () => requestAnimationFrame(loop);
+
 
 
 
