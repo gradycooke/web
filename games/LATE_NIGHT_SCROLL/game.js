@@ -35,6 +35,7 @@ const SHOOTING_STAR_SPEED = { min: 10, max: 14 };
 const SHOOTING_STAR_TAIL = 55;
 const FLOAT_TEXT_LIFETIME = 800;
 const FLOAT_TEXT_RISE_PER_MS = 0.05; // px per ms
+const HIGH_SCORE_KEY = 'late_night_scroll_high_score';
 
 // Game State
 let keys = {};
@@ -50,6 +51,7 @@ let elapsedMs = 0; // used for smooth difficulty ramp
 let started = false; // controls start screen
 let shootingStarTimer = 0;
 let nextShootingStarMs = randomRange(SHOOTING_STAR_MIN_INTERVAL, SHOOTING_STAR_MAX_INTERVAL);
+highScore = loadHighScore();
 const sfx = {
   bonk: new Audio('game-over-39-199830.ogg'),
   jump: new Audio('swing-whoosh-110410.ogg'),
@@ -776,6 +778,25 @@ function randomRange(min, max) {
 function updateHighScore() {
   if (score > highScore) {
     highScore = score;
+    persistHighScore(highScore);
+  }
+}
+
+function loadHighScore() {
+  try {
+    const saved = localStorage.getItem(HIGH_SCORE_KEY);
+    const parsed = saved ? parseFloat(saved) : 0;
+    return Number.isFinite(parsed) ? parsed : 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function persistHighScore(value) {
+  try {
+    localStorage.setItem(HIGH_SCORE_KEY, Math.floor(value).toString());
+  } catch (e) {
+    // ignore storage failures (e.g., blocked cookies/storage)
   }
 }
 
