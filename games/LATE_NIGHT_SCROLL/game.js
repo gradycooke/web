@@ -28,19 +28,32 @@ const BASE_SPAWN_CHANCE = 0.02;
 const MAX_SPAWN_CHANCE = 0.045;
 const BASE_MIN_GAP = 180;
 const MIN_GAP_AT_MAX = 110;
+const SHOOTING_STAR_MIN_INTERVAL = 20000;
+const SHOOTING_STAR_MAX_INTERVAL = 30000;
+const SHOOTING_STAR_SIZE = { width: 26, height: 10 };
+const SHOOTING_STAR_SPEED = { min: 10, max: 14 };
+const SHOOTING_STAR_TAIL = 55;
+const FLOAT_TEXT_LIFETIME = 800;
+const FLOAT_TEXT_RISE_PER_MS = 0.05; // px per ms
 
 // Game State
 let keys = {};
 let obstacles = [];
+let shootingStars = [];
+let floatTexts = [];
 let score = 0;
+let highScore = 0;
 let gameOver = false;
 let animationId = null; // track the current animation frame to prevent double loops
 let lastTimestamp = null;
 let elapsedMs = 0; // used for smooth difficulty ramp
 let started = false; // controls start screen
+let shootingStarTimer = 0;
+let nextShootingStarMs = randomRange(SHOOTING_STAR_MIN_INTERVAL, SHOOTING_STAR_MAX_INTERVAL);
 const sfx = {
   bonk: new Audio('game-over-39-199830.ogg'),
-  jump: new Audio('swing-whoosh-110410.ogg')
+  jump: new Audio('swing-whoosh-110410.ogg'),
+  star: new Audio('90s-game-ui-10-185103.ogg')
 };
 
 // One-time generated backdrop elements
@@ -71,6 +84,11 @@ let player = {
 
 // Input handlers
 window.addEventListener('keydown', e => {
+  if (gameOver) {
+    restartGame();
+    return;
+  }
+
   if (!started) {
     startRun();
   }
@@ -172,6 +190,42 @@ function update(deltaMs) {
 
   // 4b. Time-based scoring
   score += deltaMs * SCORE_PER_MS;
+  updateHighScore();
+
+  // Shooting stars: spawn + move + collect
+  shootingStarTimer += deltaMs;
+  if (shootingStarTimer >= nextShootingStarMs) {
+    spawnShootingStar();
+    shootingStarTimer = 0;
+    nextShootingStarMs = randomRange(SHOOTING_STAR_MIN_INTERVAL, SHOOTING_STAR_MAX_INTERVAL);
+  }
+  for (let i = shootingStars.length - 1; i >= 0; i--) {
+    const star = shootingStars[i];
+    star.x += star.vx;
+    star.y += star.vy;
+
+    const outOfView =
+      star.x < -SHOOTING_STAR_TAIL - star.width ||
+      star.x > canvas.width + SHOOTING_STAR_TAIL + star.width ||
+      star.y < -60 ||
+      star.y > canvas.height + 60;
+
+    if (outOfView) {
+      shootingStars.splice(i, 1);
+      continue;
+    }
+
+    if (!gameOver && aabbIntersect(player, star)) {
+      playSound(sfx.star);
+      score += 20;
+      updateHighScore();
+      addFloatText('+20', player.x + player.width * 0.5, player.y);
+      shootingStars.splice(i, 1);
+      continue;
+    }
+  }
+
+  updateFloatTexts(deltaMs);
 
   // 5. Move obstacles and detect collisions
   for (let i = obstacles.length - 1; i >= 0; i--) {
@@ -287,6 +341,14 @@ function draw() {
     drawObstacle(ob);
   }
 
+  // Shooting stars (bonuses)
+  for (const star of shootingStars) {
+    drawShootingStar(star);
+  }
+
+  // Floating texts
+  drawFloatTexts();
+
   // Score
   ctx.fillStyle = 'white';
   ctx.font = '20px monospace';
@@ -311,11 +373,19 @@ function showGameOver() {
 
   ctx.fillStyle = 'white';
   ctx.font = '40px sans-serif';
-  ctx.fillText('GAME OVER', canvas.width / 2 - 120, canvas.height / 2);
+  const baseY = canvas.height / 2;
+  ctx.fillText('GAME OVER', canvas.width / 2 - 120, baseY);
   ctx.font = '20px monospace';
-  ctx.fillText(`Final Score: ${Math.floor(score)}`, canvas.width / 2 - 80, canvas.height / 2 + 40);
+  ctx.fillText(`Final Score: ${Math.floor(score)}`, canvas.width / 2 - 80, baseY + 40);
+  let restartY = baseY + 70;
+  if (highScore > 0) {
+    ctx.textAlign = 'center';
+    ctx.fillText(`High Score: ${Math.floor(highScore)}`, canvas.width / 2, baseY + 70);
+    ctx.textAlign = 'start';
+    restartY = baseY + 100;
+  }
   ctx.font = '16px monospace';
-  ctx.fillText('Press any key to restart', canvas.width / 2 - 100, canvas.height / 2 + 70);
+  ctx.fillText('Press any key to restart', canvas.width / 2 - 100, restartY);
 }
 
 // Start screen overlay
@@ -330,6 +400,9 @@ function showStartScreen() {
   ctx.font = '18px monospace';
   ctx.fillStyle = 'white';
   ctx.fillText('Press any key to start', canvas.width / 2, canvas.height / 2 + 30);
+  if (highScore > 0) {
+    ctx.fillText(`High Score: ${Math.floor(highScore)}`, canvas.width / 2, canvas.height / 2 + 60);
+  }
   ctx.textAlign = 'start';
 }
 
@@ -353,6 +426,10 @@ function restartGame() {
   score = 0;
   lastTimestamp = null;
   elapsedMs = 0;
+  shootingStars = [];
+  floatTexts = [];
+  shootingStarTimer = 0;
+  nextShootingStarMs = randomRange(SHOOTING_STAR_MIN_INTERVAL, SHOOTING_STAR_MAX_INTERVAL);
   gameOver = false;
   started = true;
 
@@ -491,6 +568,47 @@ function drawObstacle(ob) {
   ctx.fillRect(ob.x, ob.y, ob.width, ob.height);
 }
 
+function drawShootingStar(star) {
+  const headX = star.x + star.width * 0.5;
+  const headY = star.y + star.height * 0.5;
+  const tailX = headX - Math.sign(star.vx || 1) * SHOOTING_STAR_TAIL;
+  const tailY = headY - star.vy * 6;
+  const grad = ctx.createLinearGradient(headX, headY, tailX, tailY);
+  grad.addColorStop(0, '#ffd166');
+  grad.addColorStop(0.4, 'rgba(255, 209, 102, 0.7)');
+  grad.addColorStop(1, 'rgba(126, 208, 255, 0)');
+
+  ctx.save();
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(headX, headY);
+  ctx.lineTo(tailX, tailY);
+  ctx.stroke();
+
+  ctx.fillStyle = '#ffe29f';
+  ctx.shadowColor = '#ffe29f';
+  ctx.shadowBlur = 10;
+  ctx.beginPath();
+  ctx.ellipse(headX, headY, star.width * 0.6, star.height * 0.6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawFloatTexts() {
+  for (let i = floatTexts.length - 1; i >= 0; i--) {
+    const ft = floatTexts[i];
+    const alpha = Math.max(0, ft.life / FLOAT_TEXT_LIFETIME);
+    ctx.save();
+    ctx.fillStyle = `rgba(0, 225, 93, ${alpha})`;
+    ctx.font = '16px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(ft.text, ft.x, ft.y);
+    ctx.restore();
+  }
+}
+
 // Collision helpers (polygon SAT, step handled as two rects)
 function rectToPoly(x, y, w, h) {
   return [
@@ -600,6 +718,65 @@ function projectPoly(poly, axis) {
 
 function dot(p, a) {
   return p.x * a.x + p.y * a.y;
+}
+
+function addFloatText(text, x, y) {
+  floatTexts.push({
+    text,
+    x,
+    y,
+    life: FLOAT_TEXT_LIFETIME
+  });
+}
+
+function updateFloatTexts(deltaMs) {
+  for (let i = floatTexts.length - 1; i >= 0; i--) {
+    const ft = floatTexts[i];
+    ft.life -= deltaMs;
+    ft.y -= FLOAT_TEXT_RISE_PER_MS * deltaMs;
+    if (ft.life <= 0) {
+      floatTexts.splice(i, 1);
+    }
+  }
+}
+
+function aabbIntersect(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+}
+
+function spawnShootingStar() {
+  const fromLeft = Math.random() < 0.5;
+  const y = randomRange(90, Math.max(120, GROUND_Y - 130)); // ensure reachable height
+  const speed = randomRange(SHOOTING_STAR_SPEED.min, SHOOTING_STAR_SPEED.max);
+  const drift = randomRange(-1.4, 1.4);
+  const vx = fromLeft ? speed : -speed;
+  const x = fromLeft
+    ? -SHOOTING_STAR_SIZE.width - 12
+    : canvas.width + SHOOTING_STAR_SIZE.width + 12;
+
+  shootingStars.push({
+    x,
+    y,
+    width: SHOOTING_STAR_SIZE.width,
+    height: SHOOTING_STAR_SIZE.height,
+    vx,
+    vy: drift
+  });
+}
+
+function randomRange(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function updateHighScore() {
+  if (score > highScore) {
+    highScore = score;
+  }
 }
 
 // Start game
