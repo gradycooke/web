@@ -1,4 +1,4 @@
-﻿(() => {
+(() => {
   const startScreen = document.getElementById('startScreen');
   const questionScreen = document.getElementById('questionScreen');
   const winScreen = document.getElementById('winScreen');
@@ -83,7 +83,7 @@
     try {
       const stored = localStorage.getItem(BEST_TIME_KEY);
       const parsed = Number(stored);
-      return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
     } catch (e) {
       return null;
     }
@@ -349,6 +349,7 @@
     cipherStatus.style.display = 'none';
     promptText.style.fontSize = '';
     promptText.style.textAlign = '';
+    statusMessage.style.textAlign = 'center';
     questionScreen.classList.remove('colors-mode');
 
     if (stage === 'flowers') {
@@ -533,11 +534,13 @@
     flowerField.style.display = 'none';
     answerInput.disabled = true;
     statusMessage.textContent = 'Memorize these numbers!';
+    statusMessage.style.textAlign = 'center';
 
     memoryTimeoutId = setTimeout(() => {
       memoryDisplay.classList.remove('active');
       memoryDisplay.innerHTML = '';
       statusMessage.textContent = 'Enter the three numbers (separate with spaces).';
+      statusMessage.style.textAlign = 'left';
       answerInput.placeholder = '123 456 789';
       answerInput.setAttribute('aria-label', 'Enter the three numbers you saw');
       answerInput.disabled = false;
@@ -967,7 +970,7 @@
 
   const updateBestTimeDisplay = () => {
     bestTimeDisplay.textContent =
-      bestTime === null ? 'Best Time: --:--' : `Best Time: ${formatSeconds(bestTime)}`;
+      bestTime === null ? '' : `Best Time: ${formatSeconds(bestTime)}`;
   };
 
   const endGame = (win) => {
