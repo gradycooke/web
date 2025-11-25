@@ -71,9 +71,22 @@
     mix-blend-mode: screen;
   }
 
+  .game-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin: 0 auto;
+    padding: 0 4vw;
+    box-sizing: border-box;
+  }
+
   .game-shell {
     position: relative;
-    width: min(960px, 92vw);
+    width: 100%;
     height: min(620px, 90vh);
     background: var(--card);
       border: 3px solid #fff;
@@ -784,6 +797,25 @@
       text-align: center;
     }
 
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .volume-control input[type="range"] {
+      width: 160px;
+      accent-color: var(--accent);
+    }
+
+    .volume-row {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+
     #homeButton {
       position: absolute;
       top: 16px;
@@ -858,6 +890,7 @@
   <a href="#" id="homeButton" onclick="location.reload(); return false;">Home</a>
   <button class="mini-restart" id="restartButton" aria-label="Restart game">⟳</button>
   <div class="dot-waves" aria-hidden="true"></div>
+  <div class="game-wrapper">
   <div class="game-shell">
     <div class="hud">
       <div class="timer" id="timerDisplay">00:00</div>
@@ -908,7 +941,15 @@
 
     <div class="scanline"></div>
   </div>
+  <div class="volume-row">
+    <div class="volume-control">
+      <label for="volumeSlider">Volume</label>
+      <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+    </div>
+  </div>
+</div>
 
   <script src="quiz.js"></script>
 </body>
 </html>
+
