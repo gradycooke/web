@@ -97,7 +97,7 @@
       padding: 15px 40px;
       font-size: 1.2rem;
       font-family: 'Fira Sans', sans-serif;
-      font-weight: 600; /* ✅ semi-bold */
+      font-weight: 600;
       color: black;
       text-decoration: none;
       background: linear-gradient(90deg, #ff4500, #ffb300);
@@ -125,11 +125,6 @@
       color: #888;
       font-size: 0.9rem;
       margin-bottom: 30px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 600px) {
@@ -160,12 +155,12 @@
 
     <div class="button-section">
       <ul>
-        <li><a href="games/HOMEWORK/" class="button">HOMEWORK</a></li>
-        <li><a href="games/LATE_NIGHT_SCROLL/" class="button">LATE NIGHT SCROLL</a></li>
-        <li><a href="games/silly_outer_space_worm_game" class="button">Silly Outer Space Worm Game</a></li>
-        <li><a href="games/bloopy_blop" class="button">Bloopy Blop</a></li>
-        <li><a href="games/DONT_TOUCH_THE_LASERS/" class="button">DON'T TOUCH THE LASERS</a></li>
-        <li><a href="https://www.youtube.com/@MathsNeedNotApply" target="_blank" class="button youtube">YouTube Channel</a></li>
+        <li><a href="games/HOMEWORK/" class="button" data-beep="1">HOMEWORK</a></li>
+        <li><a href="games/LATE_NIGHT_SCROLL/" class="button" data-beep="2">LATE NIGHT SCROLL</a></li>
+        <li><a href="games/silly_outer_space_worm_game" class="button" data-beep="3">Silly Outer Space Worm Game</a></li>
+        <li><a href="games/bloopy_blop" class="button" data-beep="4">Bloopy Blop</a></li>
+        <li><a href="games/DONT_TOUCH_THE_LASERS/" class="button" data-beep="5">DON'T TOUCH THE LASERS</a></li>
+        <li><a href="https://www.youtube.com/@MathsNeedNotApply" target="_blank" class="button youtube" data-beep="6">YouTube Channel</a></li>
       </ul>
     </div>
   </main>
@@ -173,6 +168,28 @@
   <footer>
     © 2025 Maths Need Not Apply | All Rights Reserved
   </footer>
+
+  <!-- 🔊 Beep sound hover logic -->
+  <script>
+    const buttons = document.querySelectorAll('.button');
+    const beepSounds = {
+      1: new Audio('Assets/Audio/triangle-beep-short-1-185304.ogg'),
+      2: new Audio('Assets/Audio/triangle-beep-short-2-185305.ogg'),
+      3: new Audio('Assets/Audio/triangle-beep-short-3-185306.ogg'),
+      4: new Audio('Assets/Audio/triangle-beep-short-4-185307.ogg'),
+      5: new Audio('Assets/Audio/triangle-beep-short-5-185308.ogg'),
+      6: new Audio('Assets/Audio/triangle-beep-short-6-185309.ogg')
+    };
+
+    buttons.forEach(button => {
+      const id = button.dataset.beep;
+      if (id && beepSounds[id]) {
+        button.addEventListener('mouseenter', () => {
+          beepSounds[id].currentTime = 0;
+          beepSounds[id].play();
+        });
+      }
+    });
+  </script>
 </body>
 </html>
-
