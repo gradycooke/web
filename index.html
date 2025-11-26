@@ -170,18 +170,24 @@
 
   <script>
     const buttons = document.querySelectorAll('.button');
+    const logo = document.querySelector('header img');
+  
     const beepSounds = {
       1: new Audio('Assets/Audio/triangle-beep-short-1-185304.ogg'),
       2: new Audio('Assets/Audio/triangle-beep-short-2-185305.ogg'),
       3: new Audio('Assets/Audio/triangle-beep-short-3-185306.ogg'),
       4: new Audio('Assets/Audio/triangle-beep-short-4-185307.ogg'),
       5: new Audio('Assets/Audio/triangle-beep-short-5-185308.ogg'),
+      6: new Audio('Assets/Audio/triangle-beep-short-6-185309.ogg'),
+      8: new Audio('Assets/Audio/triangle-beep-short-8-185311.ogg') // <- Added for logo hover
     };
-
+  
+    // Unlock audio on first interaction
     document.body.addEventListener('click', () => {
       Object.values(beepSounds).forEach(sound => sound.load());
     }, { once: true });
-
+  
+    // Button hover sounds
     buttons.forEach(button => {
       const id = button.dataset.beep;
       if (id && beepSounds[id]) {
@@ -193,6 +199,16 @@
         });
       }
     });
+  
+    // Logo hover sound
+    if (logo && beepSounds[8]) {
+      logo.addEventListener('mouseenter', () => {
+        beepSounds[8].currentTime = 0;
+        beepSounds[8].play().catch(err => {
+          console.warn('Audio blocked on logo hover:', err);
+        });
+      });
+    }
   </script>
 </body>
 </html>
