@@ -427,7 +427,7 @@ function update() {
     ctx.font = '12px sans-serif';
     ctx.fillText('@ MNNA 2025 | Not For Redistribution', canvas.width / 2, canvas.height - 15);
 
-    // 🔁 Keep looping to animate the hue
+    // Keep looping to animate the hue
     animationFrameId = requestAnimationFrame(update);
     return;
   }
@@ -465,13 +465,13 @@ function update() {
     // Turn lasers and glow red
     hue = 0;
 
-    // Dramatically increase difficulty
+    // Increase laser speed
     minSpeed = 15;
-    maxSpeed = 25;
+    maxSpeed = 22;
 
-    // Optionally, shorten spawn intervals more aggressively
-    window.minLaserInterval = 2;
-    window.maxLaserInterval = 20;
+    // Shorten spawn intervals more aggressively
+    window.minLaserInterval = 4;
+    window.maxLaserInterval = 27;
   }
 
   updateDifficulty();
@@ -512,7 +512,7 @@ function loop() {
   animationFrameId = requestAnimationFrame(update);
 }
 
-// ✅ Ensure the "Press Start 2P" font is fully loaded before drawing the first frame
+// Ensure the "Press Start 2P" font is fully loaded before drawing the first frame
 if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(() => {
     setTimeout(() => update(), 50);
@@ -521,6 +521,7 @@ if (document.fonts && document.fonts.ready) {
   // Fallback for older browsers
   setTimeout(() => update(), 50);
 }
+
 
 
 
