@@ -57,8 +57,9 @@ const sfx = {
   jump: new Audio('swing-whoosh-110410.ogg'),
   star: new Audio('90s-game-ui-10-185103.ogg')
 };
+const music = new Audio('soul-soothing-night-194581.ogg');
 
-const DEFAULT_VOLUME = 1;
+const DEFAULT_VOLUME = 0.7;
 const volumeSlider = document.getElementById('volumeSlider');
 const SFX_BOOST = {
   bonk: 1,
@@ -71,6 +72,7 @@ function setVolume(v) {
   Object.entries(sfx).forEach(([name, a]) => {
     if (a) a.volume = Math.min(1, level * (SFX_BOOST[name] || 1));
   });
+  if (music) music.volume = level;
 }
 
 setVolume(DEFAULT_VOLUME);
@@ -85,6 +87,22 @@ if (volumeSlider) {
       e.preventDefault(); // keep arrow keys exclusive to gameplay
     }
   });
+}
+music.loop = true;
+music.addEventListener('ended', () => {
+  music.currentTime = 0;
+  music.play().catch(() => {});
+});
+
+function startMusic() {
+  if (!music.paused) return;
+  music.currentTime = 0;
+  music.play().catch(() => {});
+}
+
+function stopMusic() {
+  music.pause();
+  music.currentTime = 0;
 }
 
 // One-time generated backdrop elements
@@ -270,6 +288,7 @@ function update(deltaMs) {
     if (COLLISIONS_ENABLED && !gameOver && checkCollision(player, obstacles[i])) {
       playSound(sfx.bonk);
       gameOver = true;
+      stopMusic();
     }
   }
 
@@ -468,6 +487,7 @@ function restartGame() {
   nextShootingStarMs = randomRange(SHOOTING_STAR_MIN_INTERVAL, SHOOTING_STAR_MAX_INTERVAL);
   gameOver = false;
   started = true;
+  startMusic();
 
   requestAnimationFrame(gameLoop);
 }
@@ -492,6 +512,7 @@ function attemptJump() {
 function startRun() {
   started = true;
   lastTimestamp = null;
+  startMusic();
 }
 
 function playSound(audio) {
@@ -835,5 +856,6 @@ function persistHighScore(value) {
 }
 
 // Start game
+startMusic();
 requestAnimationFrame(gameLoop);
 
