@@ -62,6 +62,33 @@
       letter-spacing: 1px;
     }
 
+    .wiggle-title {
+      display: inline-block;
+      cursor: default;
+      transform-origin: 50% 60%;
+      transition: color 0.3s ease, text-shadow 0.3s ease;
+    }
+
+    .wiggle-title:hover {
+      animation: wiggle 1.2s ease-in-out infinite, colorCycle 2.4s linear infinite;
+    }
+
+    @keyframes wiggle {
+      0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
+      25%  { transform: translate(-6px, -8px) rotate(90deg) scale(1.02); }
+      50%  { transform: translate(0px, -12px) rotate(180deg) scale(1.03); }
+      75%  { transform: translate(6px, -8px) rotate(270deg) scale(1.02); }
+      100% { transform: translate(0, 0) rotate(360deg) scale(1); }
+    }
+
+    @keyframes colorCycle {
+      0%   { color: #ffb300; text-shadow: 0 0 10px rgba(255, 179, 0, 0.8), 0 0 20px rgba(255, 102, 0, 0.7); }
+      25%  { color: #ff3d6b; text-shadow: 0 0 10px rgba(255, 61, 107, 0.8), 0 0 20px rgba(255, 132, 171, 0.7); }
+      50%  { color: #4fd0ff; text-shadow: 0 0 10px rgba(79, 208, 255, 0.8), 0 0 20px rgba(140, 230, 255, 0.7); }
+      75%  { color: #7eff7a; text-shadow: 0 0 10px rgba(126, 255, 122, 0.8), 0 0 20px rgba(173, 255, 170, 0.7); }
+      100% { color: #ffb300; text-shadow: 0 0 10px rgba(255, 179, 0, 0.8), 0 0 20px rgba(255, 102, 0, 0.7); }
+    }
+
     p {
       color: #ccc;
       font-size: 1.1rem;
@@ -150,7 +177,7 @@
   </header>
 
   <main>
-    <h1>Maths Need Not Apply</h1>
+    <h1 class="wiggle-title">Maths Need Not Apply</h1>
     <p>Play, Learn, and Explore!</p>
 
     <div class="button-section">
@@ -171,6 +198,7 @@
   <script>
     const buttons = document.querySelectorAll('.button');
     const logo = document.querySelector('header img');
+    const title = document.querySelector('.wiggle-title');
   
     const beepSounds = {
       1: new Audio('Assets/Audio/triangle-beep-short-1-185304.ogg'),
@@ -178,7 +206,8 @@
       3: new Audio('Assets/Audio/triangle-beep-short-3-185306.ogg'),
       4: new Audio('Assets/Audio/triangle-beep-short-4-185307.ogg'),
       5: new Audio('Assets/Audio/triangle-beep-short-5-185308.ogg'),
-      8: new Audio('Assets/Audio/triangle-beep-short-8-185311.ogg') 
+      8: new Audio('Assets/Audio/triangle-beep-short-8-185311.ogg'),
+      title: new Audio('Assets/Audio/overhead-spin-378217.ogg')
     };
   
     // Unlock audio on first interaction
@@ -205,6 +234,16 @@
         beepSounds[8].currentTime = 0;
         beepSounds[8].play().catch(err => {
           console.warn('Audio blocked on logo hover:', err);
+        });
+      });
+    }
+
+    // Title hover sound
+    if (title && beepSounds.title) {
+      title.addEventListener('mouseenter', () => {
+        beepSounds.title.currentTime = 0;
+        beepSounds.title.play().catch(err => {
+          console.warn('Audio blocked on title hover:', err);
         });
       });
     }
