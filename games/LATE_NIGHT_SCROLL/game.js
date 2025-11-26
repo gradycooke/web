@@ -62,8 +62,8 @@ const music = new Audio('soul-soothing-night-194581.ogg');
 const DEFAULT_VOLUME = 0.7;
 const volumeSlider = document.getElementById('volumeSlider');
 const SFX_BOOST = {
-  bonk: 1,
-  jump: 2, // give jumps extra punch without reducing others
+  bonk: 0.5,
+  jump: 1.5, // give jumps extra punch without reducing others
   star: 1
 };
 
