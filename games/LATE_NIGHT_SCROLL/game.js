@@ -94,6 +94,13 @@ music.addEventListener('ended', () => {
   music.play().catch(() => {});
 });
 
+// Prevent a huge delta after tab is hidden (visibility pause) by resetting timestamp on return
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    lastTimestamp = null;
+  }
+});
+
 function startMusic() {
   if (!music.paused) return;
   music.currentTime = 0;
