@@ -51,7 +51,7 @@
   let correctAnswer = 0;
   const BEST_TIME_KEY = 'homework-best-time';
   let bestTime = null;
-  let stage = 'flowers'; // 'flowers' -> 'sum' -> 'memory' -> 'colors' -> 'prime' -> 'arrows'
+  let stage = 'flowers'; 
   let memoryNumbers = [];
   let memoryTimeoutId = null;
   let colorMap = [];
@@ -1138,6 +1138,9 @@
                     : stage === 'hanoi'
                       ? 'Sum missed. New sum started.'
                       : 'Nope. Count again!';
+    if (stage === 'angle') {
+      statusMessage.style.textAlign = 'left';
+    }
     answerInput.value = '';
 
     if (stage === 'memory') {
@@ -1290,3 +1293,4 @@
     });
   }
 })();
+
