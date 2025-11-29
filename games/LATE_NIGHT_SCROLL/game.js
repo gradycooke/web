@@ -64,7 +64,7 @@ const volumeSlider = document.getElementById('volumeSlider');
 const SFX_BOOST = {
   bonk: 0.5,
   jump: 1.5, // give jumps extra punch without reducing others
-  star: 1
+  star: 0.5
 };
 
 function setVolume(v) {
