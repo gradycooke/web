@@ -14,6 +14,8 @@ const volumeSlider = document.getElementById('volumeSlider');
 
 const VOLUME_STORAGE_KEY = 'snake_volume';
 const DEFAULT_VOLUME = 1;
+const SECRET_SEQUENCE = ['5', '6', '7', '8', '9'];
+const SECRET_WINDOW_MS = 4000;
 
 let snake, food, direction, directionChanged, paused;
 let speed = 10;
@@ -22,6 +24,9 @@ let gameOver = false;
 let youWin = false;
 let currentScreen = 'start';
 let currentHighScore = 0;
+let secretIndex = 0;
+let secretStartTime = 0;
+let secretUnlocked = false;
 
 let lastTime = 0;
 
@@ -94,9 +99,20 @@ function updateHighScore(label, score) {
   }
 }
 
+function getDifficultyLabel(speedValue) {
+  switch (speedValue) {
+    case 3: return "Super Easy";
+    case 10: return "Easy";
+    case 25: return "Medium";
+    case 40: return "Hard";
+    case 60: return "Super Hard";
+    default: return "Custom";
+  }
+}
+
 function startGame(difficulty) {
   speed = difficulty;
-  difficultyLabel = speed === 10 ? "Easy" : speed === 20 ? "Medium" : speed === 30 ? "Hard" : "Custom";
+  difficultyLabel = getDifficultyLabel(speed);
   currentHighScore = loadHighScore(difficultyLabel);
 
   currentScreen = 'game';
@@ -116,9 +132,15 @@ function resetGame() {
 
 function handleGlobalKeys(e) {
   if (currentScreen === 'start') {
+    checkSecretSequence(e.key);
+  }
+
+  if (currentScreen === 'start') {
     if (e.key === '1') startGame(10);
-    if (e.key === '2') startGame(20);
-    if (e.key === '3') startGame(30);
+    if (e.key === '2') startGame(25);
+    if (e.key === '3') startGame(40);
+    if (secretUnlocked && e.key === '4') startGame(3);
+    if (secretUnlocked && e.key === '5') startGame(60);
     return;
   }
 
@@ -148,6 +170,39 @@ function changeDirection(e) {
 
 document.addEventListener('keydown', handleGlobalKeys);
 document.addEventListener('keydown', changeDirection);
+
+function checkSecretSequence(key) {
+  if (secretUnlocked) return;
+
+  const now = performance.now();
+
+  if (secretIndex === 0) {
+    if (key === SECRET_SEQUENCE[0]) {
+      secretStartTime = now;
+      secretIndex = 1;
+    }
+    return;
+  }
+
+  if (now - secretStartTime > SECRET_WINDOW_MS) {
+    // Window expired; restart detection.
+    secretIndex = key === SECRET_SEQUENCE[0] ? 1 : 0;
+    secretStartTime = secretIndex === 1 ? now : 0;
+    return;
+  }
+
+  if (key === SECRET_SEQUENCE[secretIndex]) {
+    secretIndex++;
+    if (secretIndex === SECRET_SEQUENCE.length) {
+      secretUnlocked = true;
+    }
+    return;
+  }
+
+  // Wrong key within window; allow immediate restart if they hit the first key.
+  secretIndex = key === SECRET_SEQUENCE[0] ? 1 : 0;
+  secretStartTime = secretIndex === 1 ? now : secretStartTime;
+}
 
 applyVolume(loadSavedVolume());
 
@@ -260,7 +315,13 @@ function draw() {
 }
 
 function drawStartScreen() {
+  ctx.filter = 'blur(3px)';
   ctx.drawImage(bgImage, 0, 0, canvas.width, GAME_HEIGHT);
+  ctx.filter = 'none';
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   const floatY = Math.sin(Date.now() / 600) * 25;
 
   ctx.font = '70px Century Gothic';
@@ -278,9 +339,19 @@ function drawStartScreen() {
   ctx.fillText('Worm Game', canvas.width / 2, titleLine2Y);
 
   ctx.font = '30px Century Gothic';
+  ctx.lineWidth = 3;
+  ctx.strokeText('Press 1 for EASY', canvas.width / 2, canvas.height / 2 + 70);
   ctx.fillText('Press 1 for EASY', canvas.width / 2, canvas.height / 2 + 70);
+  ctx.strokeText('Press 2 for MEDIUM', canvas.width / 2, canvas.height / 2 + 120);
   ctx.fillText('Press 2 for MEDIUM', canvas.width / 2, canvas.height / 2 + 120);
+  ctx.strokeText('Press 3 for HARD', canvas.width / 2, canvas.height / 2 + 170);
   ctx.fillText('Press 3 for HARD', canvas.width / 2, canvas.height / 2 + 170);
+  if (secretUnlocked) {
+    ctx.strokeText('Press 4 for SUPER EASY', canvas.width / 2, canvas.height / 2 + 220);
+    ctx.fillText('Press 4 for SUPER EASY', canvas.width / 2, canvas.height / 2 + 220);
+    ctx.strokeText('Press 5 for SUPER HARD', canvas.width / 2, canvas.height / 2 + 270);
+    ctx.fillText('Press 5 for SUPER HARD', canvas.width / 2, canvas.height / 2 + 270);
+  }
 }
 
 function drawGameOverOverlay() {
